@@ -75,13 +75,17 @@ public class PreviewFile {
         Uri uri = null;
         if (url.startsWith("file:")) {
             File file = new File(new URI(url));
-            uri = FileProvider.getUriForFile(this.bridge.getActivity(),
-                    this.bridge.getActivity().getApplicationContext().getPackageName() + ".fileprovider", file);
-
+            uri = uriFromFile(file);
         } else {
             uri = Uri.parse(url);
         }
         return uri;
+    }
+
+    private Uri uriFromFile(File file) {
+      Uri uri = FileProvider.getUriForFile(this.bridge.getActivity(),
+        this.bridge.getActivity().getApplicationContext().getPackageName() + ".fileprovider", file);
+      return uri;
     }
 
     private void viewFile(Uri uri) {
@@ -134,6 +138,7 @@ public class PreviewFile {
             String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
             fileName = System.currentTimeMillis() + "_file" + (notEmpty(ext) ? "." + ext : "");
         }
+        //fileName = URLEncoder.encode(fileName, "UTF-8");
 
         int fileLength = fileName.length();
         if (fileLength > 120) {
@@ -145,14 +150,10 @@ public class PreviewFile {
           }
         }
 
-        saveFile(Base64.decode(encodedBase64, Base64.DEFAULT), dir, fileName);
-        localFile = "content://" + dir + "/" + fileName;
-
         try {
-            Uri uri = Uri.parse(localFile);
-            File file = new File(uri.getPath());
+            File file = saveFile(Base64.decode(encodedBase64, Base64.DEFAULT), dir, fileName);
             if (file.exists() && !file.isDirectory())
-                return uri;
+                return uriFromFile(file);
             else
                 savedCall.reject("cannot write the base64 to a file");
         } catch (Exception e) {
@@ -161,12 +162,14 @@ public class PreviewFile {
         return null;
     }
 
-    private void saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
+    private File saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
         final File dir = new File(dirName);
-        final FileOutputStream fos = new FileOutputStream(new File(dir, fileName));
+        final File file = new File(dir, fileName);
+        final FileOutputStream fos = new FileOutputStream(file);
         fos.write(bytes);
         fos.flush();
         fos.close();
+        return file;
     }
 
     private String getDownloadDir() throws IOException {
