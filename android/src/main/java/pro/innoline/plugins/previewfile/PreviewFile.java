@@ -64,7 +64,6 @@ public class PreviewFile {
     }
 
     private String bathToMime(String url) {
-
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
         if (notEmpty(extension))
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
@@ -72,7 +71,7 @@ public class PreviewFile {
     }
 
     private Uri pathToUri(String url) throws URISyntaxException {
-        Uri uri = null;
+        Uri uri;
         if (url.startsWith("file:")) {
             File file = new File(new URI(url));
             uri = uriFromFile(file);
@@ -83,9 +82,8 @@ public class PreviewFile {
     }
 
     private Uri uriFromFile(File file) {
-      Uri uri = FileProvider.getUriForFile(this.bridge.getActivity(),
+      return FileProvider.getUriForFile(this.bridge.getActivity(),
         this.bridge.getActivity().getApplicationContext().getPackageName() + ".fileprovider", file);
-      return uri;
     }
 
     private void viewFile(Uri uri) {
@@ -172,16 +170,19 @@ public class PreviewFile {
         return file;
     }
 
-    private String getDownloadDir() throws IOException {
+    private String getDownloadDir() {
+      try {
         // better check, otherwise it may crash the app
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            // we need to use external storage since we need to share to another app
-            final String dir = bridge.getContext().getExternalFilesDir(null) + "/capacitor-preview-file";
-            createOrCleanDir(dir);
-            return dir;
-        } else {
-            return null;
+          // we need to use external storage since we need to share to another app
+          final String dir = bridge.getContext().getExternalFilesDir(null) + "/capacitor-preview-file";
+          createOrCleanDir(dir);
+          return dir;
         }
+      } catch (Exception e) {
+        savedCall.reject(e.getMessage());
+      }
+      return null;
     }
 
     private void createOrCleanDir(final String downloadDir) throws IOException {
@@ -196,7 +197,7 @@ public class PreviewFile {
     }
 
     private void cleanupOldFiles(File dir) {
-        for (File f : dir.listFiles()) {
+        for (File f : Objects.requireNonNull(dir.listFiles())) {
             // noinspection ResultOfMethodCallIgnored
             f.delete();
         }
