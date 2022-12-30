@@ -1,6 +1,6 @@
 {
-  "name": "@innoline/capasitor-preview-file",
-  "version": "4.0.6",
+  "name": "@innoline/capacitor-preview-file",
+  "version": "4.0.0",
   "description": "Preview any file",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -11,16 +11,16 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "InnolineCapasitorPreviewFile.podspec"
+    "InnolineCapaсitorPreviewFile.podspec"
   ],
   "author": "KANekT",
   "license": "CC BY-NC-SA 4.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/innoline/capasitor-preview-file.git"
+    "url": "git+https://github.com/innoline/capaсitor-preview-file.git"
   },
   "bugs": {
-    "url": "https://github.com/innoline/capasitor-preview-file/issues"
+    "url": "https://github.com/innoline/capaсitor-preview-file/issues"
   },
   "keywords": [
     "capacitor",
