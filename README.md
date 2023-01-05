@@ -1,11 +1,11 @@
-# @innoline/capasitor-preview-file
+# @innoline/capacitor-preview-file
 
 Preview any file
 
 ## Install
 
 ```bash
-npm install @innoline/capasitor-preview-file
+npm install @innoline/capacitor-preview-file
 npx cap sync
 ```
 
